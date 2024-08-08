@@ -16,8 +16,12 @@
             padding: 20px;
         }
         #visualization {
-            flex: 3;
-            background-color: #f0f0f0;
+    flex: 3;
+    background-color: #add8e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
         }
         #controls {
             flex: 1;
@@ -459,9 +463,12 @@
         }
 
         function animate() {
-            requestAnimationFrame(animate);
-            scene.rotation.y += 0.01;
-            renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+    scene.rotation.y += 0.01;  // Horizontal rotation
+    scene.rotation.x += 0.005; // Vertical rotation
+    renderer.render(scene, camera);
+}
+
         }
 
         init();
