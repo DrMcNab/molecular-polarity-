@@ -120,6 +120,18 @@
             } else if (selectedMolecule === "HF") {
                 displayHydrogenFluoride();
             }
+
+            updatePolarityInfo();
+        }
+
+        function updatePolarityInfo() {
+            let polarityInfo = "";
+            if (selectedMolecule === "CH4" || selectedMolecule === "CO2" || selectedMolecule === "CCl4") {
+                polarityInfo = "Polarity: Non-Polar";
+            } else {
+                polarityInfo = "Polarity: Polar";
+            }
+            document.getElementById('polarity').textContent = polarityInfo;
         }
 
         function createAtom(position, color, en) {
@@ -156,17 +168,13 @@
 
             if (doubleBond) {
                 const bond2 = bond.clone();
-                bond2.position.y += 0.15;
+                bond2.position.copy(bond.position);
+                bond2.position.x += 0.1; // Slight offset for the double bond
                 scene.add(bond2);
             }
         }
 
-        // Functions to display molecules
-
         function displayMethane() {
-            document.getElementById('moleculeName').textContent = "Methane (CH₄)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const hydrogenPositions = [
                 [0.93, 0.93, 0.93],
@@ -181,10 +189,7 @@
             });
         }
 
-             function displayWater() {
-            document.getElementById('moleculeName').textContent = "Water (H₂O)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
+                function displayWater() {
             const oxygen = createAtom([0, 0, 0], 0xff0000, 3.44);
             const hydrogenPositions = [
                 [0.96, 0.75, 0],
@@ -198,9 +203,6 @@
         }
 
         function displayCO2() {
-            document.getElementById('moleculeName').textContent = "Carbon Dioxide (CO₂)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const oxygenPositions = [
                 [-1.6, 0, 0],
@@ -214,9 +216,6 @@
         }
 
         function displayAmmonia() {
-            document.getElementById('moleculeName').textContent = "Ammonia (NH₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const nitrogen = createAtom([0, 0, 0], 0x0000ff, 3.04);
             const hydrogenPositions = [
                 [0.94, 0.34, 0],
@@ -231,9 +230,6 @@
         }
 
         function displaySulfurDioxide() {
-            document.getElementById('moleculeName').textContent = "Sulfur Dioxide (SO₂)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const sulfur = createAtom([0, 0, 0], 0xffff00, 2.58);
             const oxygenPositions = [
                 [-1.2, 0.5, 0],
@@ -247,9 +243,6 @@
         }
 
         function displayPhosphine() {
-            document.getElementById('moleculeName').textContent = "Phosphine (PH₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const phosphorus = createAtom([0, 0, 0], 0xffa500, 2.19);
             const hydrogenPositions = [
                 [0.94, 0.34, 0],
@@ -264,9 +257,6 @@
         }
 
         function displayTetrachloromethane() {
-            document.getElementById('moleculeName').textContent = "Tetrachloromethane (CCl₄)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const chlorinePositions = [
                 [1, 1, 1],
@@ -282,9 +272,6 @@
         }
 
         function displayTrichloromethane() {
-            document.getElementById('moleculeName').textContent = "Trichloromethane (CHCl₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const chlorinePositions = [
                 [1, 1, 0],
@@ -303,9 +290,6 @@
         }
 
         function displayDichloromethane() {
-            document.getElementById('moleculeName').textContent = "Dichloromethane (CH₂Cl₂)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const chlorinePositions = [
                 [1, 1, 0],
@@ -328,9 +312,6 @@
         }
 
         function displayChloromethane() {
-            document.getElementById('moleculeName').textContent = "Chloromethane (CH₃Cl)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const chlorinePosition = [1, 0, 0];
             const hydrogenPositions = [
@@ -349,9 +330,6 @@
         }
 
         function displayHydrogenFluoride() {
-            document.getElementById('moleculeName').textContent = "Hydrogen Fluoride (HF)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
-
             const hydrogen = createAtom([0, 0, 0], 0xffffff, 2.20);
             const fluorinePosition = [1, 0, 0];
 
@@ -359,7 +337,7 @@
             createBond(hydrogen.position, fluorine.position);
         }
 
-                function checkAnswers() {
+        function checkAnswers() {
             const hasPolarBonds = document.querySelector('input[name="polarBonds"]:checked');
             const isMoleculePolar = document.querySelector('input[name="moleculePolarity"]:checked');
 
@@ -416,7 +394,7 @@
             }
         }
 
-        function checkIMF() {
+                function checkIMF() {
             const ldfChecked = document.getElementById('ldf').checked;
             const ddChecked = document.getElementById('dd').checked;
             const hbChecked = document.getElementById('hb').checked;
@@ -473,6 +451,7 @@
     </script>
 </body>
 </html>
+
 
 
 
