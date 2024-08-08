@@ -32,6 +32,7 @@
             <option value="CO2">Carbon Dioxide (CO₂)</option>
         </select>
         <p id="polarity"></p>
+        <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -137,6 +138,16 @@
             });
         }
 
+        function toggleEN() {
+            const toggleButton = document.getElementById("toggleButton");
+            if (toggleButton.textContent === "Show Electronegativity") {
+                toggleButton.textContent = "Use Data Booklet";
+            } else {
+                toggleButton.textContent = "Show Electronegativity";
+            }
+            loadMolecule(); // Reload the molecule to apply the toggle
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             scene.rotation.y += 0.01;
@@ -148,3 +159,4 @@
     </script>
 </body>
 </html>
+
