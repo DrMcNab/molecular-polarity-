@@ -70,6 +70,7 @@
         let scene, camera, renderer, controls;
         let selectedMolecule;
         let showEN = false;
+        const divs = [];
 
         function init() {
             // Create scene, camera, and renderer
@@ -88,7 +89,14 @@
             loadMolecule();
         }
 
+        function clearENLabels() {
+            divs.forEach(div => div.remove());
+            divs.length = 0;
+        }
+
         function loadMolecule() {
+            clearENLabels();
+
             // Clear existing objects
             while (scene.children.length > 0) {
                 scene.remove(scene.children[0]);
@@ -145,15 +153,22 @@
                 const div = document.createElement('div');
                 div.style.position = 'absolute';
                 div.style.color = 'black';
-                div.style.transform = `translate(-50%, -50%) translate(${position[0] * 200}px, ${position[1] * 200}px)`;
                 div.innerHTML = en;
+                divs.push(div);
                 document.body.appendChild(div);
-                controls.addEventListener('change', () => {
-                    div.style.transform = `translate(-50%, -50%) translate(${position[0] * 200}px, ${position[1] * 200}px)`;
-                });
+                updateENLabelPosition(div, atom);
+                controls.addEventListener('change', () => updateENLabelPosition(div, atom));
             }
 
             return atom;
+        }
+
+        function updateENLabelPosition(div, atom) {
+            const vector = new THREE.Vector3().copy(atom.position);
+            vector.project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
         }
 
         function createBond(start, end, doubleBond = false) {
@@ -174,7 +189,7 @@
             }
         }
 
-        function displayMethane() {
+                function displayMethane() {
             const carbon = createAtom([0, 0, 0], 0x000000, 2.55);
             const hydrogenPositions = [
                 [0.93, 0.93, 0.93],
@@ -189,7 +204,7 @@
             });
         }
 
-                function displayWater() {
+        function displayWater() {
             const oxygen = createAtom([0, 0, 0], 0xff0000, 3.44);
             const hydrogenPositions = [
                 [0.96, 0.75, 0],
@@ -446,11 +461,18 @@
             renderer.render(scene, camera);
         }
 
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
         init();
         animate();
     </script>
 </body>
 </html>
+
 
 
 
