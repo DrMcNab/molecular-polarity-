@@ -83,24 +83,31 @@
         let scene, camera, renderer;
         let selectedMolecule;
 
-        function init() {
-            // Create scene, camera, and renderer
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(800, 600);
-            document.getElementById('visualization').appendChild(renderer.domElement);
+       function init() {
+    // Create scene, camera, and renderer
+    scene = new THREE.Scene();
+    
+    const visualizationContainer = document.getElementById('visualization');
+    const aspectRatio = visualizationContainer.clientWidth / visualizationContainer.clientHeight;
 
-            camera.position.z = 10;
+    camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(visualizationContainer.clientWidth, visualizationContainer.clientHeight);
+    visualizationContainer.appendChild(renderer.domElement);
 
-            loadMolecule();
-        }
+    camera.position.z = 12; // Zoomed out by a factor of 3
 
-        function loadMolecule() {
-            // Clear existing objects
-            while (scene.children.length > 0) {
-                scene.remove(scene.children[0]);
-            }
+    loadMolecule();
+}
+
+window.addEventListener('resize', () => {
+    const visualizationContainer = document.getElementById('visualization');
+    const aspectRatio = visualizationContainer.clientWidth / visualizationContainer.clientHeight;
+    
+    camera.aspect = aspectRatio;
+    camera.updateProjectionMatrix();
+    renderer.setSize(visualizationContainer.clientWidth, visualizationContainer.clientHeight);
+});
 
             const moleculeSelect = document.getElementById('moleculeSelect');
             selectedMolecule = moleculeSelect.value;
