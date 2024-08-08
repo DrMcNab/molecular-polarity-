@@ -17,7 +17,7 @@
             padding: 10px;
             border-radius: 5px;
         }
-        select, button, input[type="radio"] {
+        select, button, input[type="radio"], input[type="checkbox"] {
             margin-top: 10px;
         }
     </style>
@@ -53,9 +53,15 @@
         <button onclick="checkAnswers()">Check Answers</button>
         <p id="result"></p>
 
-        <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
+        <h2>Intermolecular Forces:</h2>
+        <input type="checkbox" id="ldf" value="LDF"> London Dispersion Forces (LDF)<br>
+        <input type="checkbox" id="dd" value="Dipole-Dipole"> Dipole-Dipole Interaction<br>
+        <input type="checkbox" id="hb" value="Hydrogen Bonding"> Hydrogen Bonding<br>
+
         <button onclick="checkIMF()">Check Intermolecular Forces</button>
         <p id="imfResult"></p>
+
+        <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -71,6 +77,7 @@
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0xadd8e6); // Set the background color to light blue
             document.body.appendChild(renderer.domElement);
 
             // Add OrbitControls for rotation, zoom, and pan
@@ -174,7 +181,7 @@
             });
         }
 
-        function displayWater() {
+             function displayWater() {
             document.getElementById('moleculeName').textContent = "Water (H₂O)";
             document.getElementById('polarity').textContent = "Polarity: Polar";
 
@@ -190,7 +197,7 @@
             });
         }
 
-             function displayCO2() {
+        function displayCO2() {
             document.getElementById('moleculeName').textContent = "Carbon Dioxide (CO₂)";
             document.getElementById('polarity').textContent = "Polarity: Non-Polar";
 
@@ -410,19 +417,42 @@
         }
 
         function checkIMF() {
-            let imfType = "";
+            const ldfChecked = document.getElementById('ldf').checked;
+            const ddChecked = document.getElementById('dd').checked;
+            const hbChecked = document.getElementById('hb').checked;
+
+            let correctLDF = true;
+            let correctDD = false;
+            let correctHB = false;
 
             if (selectedMolecule === "CH4" || selectedMolecule === "CO2" || selectedMolecule === "CCl4") {
-                imfType = "London Dispersion Forces (LDF)";
-            } else if (selectedMolecule === "H2O" || selectedMolecule === "NH3" || selectedMolecule === "SO2" || 
-                       selectedMolecule === "PH3" || selectedMolecule === "CHCl3" || selectedMolecule === "CH2Cl2" || 
-                       selectedMolecule === "CH3Cl") {
-                imfType = "London Dispersion Forces (LDF), Dipole-Dipole Interaction";
+                correctLDF = true;
+                correctDD = false;
+                correctHB = false;
+            } else if (
+                selectedMolecule === "H2O" || selectedMolecule === "NH3" || selectedMolecule === "SO2" || 
+                selectedMolecule === "PH3" || selectedMolecule === "CHCl3" || selectedMolecule === "CH2Cl2" || 
+                selectedMolecule === "CH3Cl") {
+                correctLDF = true;
+                correctDD = true;
+                correctHB = false;
             } else if (selectedMolecule === "HF") {
-                imfType = "London Dispersion Forces (LDF), Dipole-Dipole Interaction, Hydrogen Bonding";
+                correctLDF = true;
+                correctDD = true;
+                correctHB = true;
             }
 
-            document.getElementById('imfResult').textContent = "Intermolecular Forces: " + imfType;
+            let correctIMF = true;
+
+            if (ldfChecked !== correctLDF) correctIMF = false;
+            if (ddChecked !== correctDD) correctIMF = false;
+            if (hbChecked !== correctHB) correctIMF = false;
+
+            if (correctIMF) {
+                document.getElementById('imfResult').textContent = "Correct!";
+            } else {
+                document.getElementById('imfResult').textContent = "Incorrect.";
+            }
         }
 
         function toggleEN() {
@@ -443,5 +473,6 @@
     </script>
 </body>
 </html>
+
 
 
