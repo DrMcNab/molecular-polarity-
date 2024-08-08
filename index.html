@@ -20,6 +20,16 @@
         select, button, input[type="radio"], input[type="checkbox"] {
             margin-top: 10px;
         }
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -39,7 +49,6 @@
             <option value="CH3Cl">Chloromethane (CH₃Cl)</option>
             <option value="HF">Hydrogen Fluoride (HF)</option>
         </select>
-        <p id="polarity"></p>
 
         <h2>Questions:</h2>
         <p>Does this molecule have polar bonds?</p>
@@ -52,7 +61,7 @@
 
         <h2>Intermolecular Forces:</h2>
         <label><input type="checkbox" id="ldf" name="forces" value="ldf"> London Dispersion Forces (LDF)</label><br>
-        <label><input type="checkbox" id="dipole" name="forces" value="dipole"> Dipole-Dipole</label><br>
+        <label><input type="checkbox" id="pdpdi" name="forces" value="pdpdi"> PD-PDI</label><br>
         <label><input type="checkbox" id="hydrogenBond" name="forces" value="hydrogenBond"> Hydrogen Bonding</label><br>
 
         <button onclick="checkAnswers()">Check Answers</button>
@@ -60,13 +69,14 @@
 
         <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
     </div>
+    
+    <div id="legend"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let scene, camera, renderer;
         let selectedMolecule;
         let showEN = false;
-        let forceChecked = false;
 
         function init() {
             // Create scene, camera, and renderer
@@ -113,13 +123,15 @@
             } else if (selectedMolecule === "HF") {
                 displayHF();
             }
+
+            updateLegend();
         }
 
         function createAtom(position, color, label) {
             const sphereGeometry = new THREE.SphereGeometry(0.2, 32, 32);
             const material = new THREE.MeshBasicMaterial({ color: color });
             const atom = new THREE.Mesh(sphereGeometry, material);
-            atom.position.set(...position);
+            atom.position.set(position[0], position[1], -position[2]); // Flip on the z-axis
             scene.add(atom);
 
             if (showEN) {
@@ -168,9 +180,8 @@
             scene.add(bond2);
         }
 
-        function displayMethane() {
+                function displayMethane() {
             document.getElementById('moleculeName').textContent = "Methane (CH₄)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
@@ -186,9 +197,8 @@
             });
         }
 
-                function displayWater() {
+        function displayWater() {
             document.getElementById('moleculeName').textContent = "Water (H₂O)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const oxygen = createAtom([0, 0, 0], 0xff0000, "O (3.5)");
             const hydrogenPositions = [
@@ -204,7 +214,6 @@
 
         function displayCO2() {
             document.getElementById('moleculeName').textContent = "Carbon Dioxide (CO₂)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const oxygenPositions = [
@@ -220,7 +229,6 @@
 
         function displayAmmonia() {
             document.getElementById('moleculeName').textContent = "Ammonia (NH₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const nitrogen = createAtom([0, 0, 0], 0x0000ff, "N (3.0)");
             const hydrogenPositions = [
@@ -237,7 +245,6 @@
 
         function displaySO2() {
             document.getElementById('moleculeName').textContent = "Sulfur Dioxide (SO₂)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const sulfur = createAtom([0, 0, 0], 0xffff00, "S (2.5)");
             const oxygenPositions = [
@@ -253,7 +260,6 @@
 
         function displayPhosphine() {
             document.getElementById('moleculeName').textContent = "Phosphine (PH₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const phosphorus = createAtom([0, 0, 0], 0xff00ff, "P (2.1)");
             const hydrogenPositions = [
@@ -270,7 +276,6 @@
 
         function displayCCl4() {
             document.getElementById('moleculeName').textContent = "Tetrachloromethane (CCl₄)";
-            document.getElementById('polarity').textContent = "Polarity: Non-Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const chlorinePositions = [
@@ -288,7 +293,6 @@
 
         function displayCH2Cl2() {
             document.getElementById('moleculeName').textContent = "Dichloromethane (CH₂Cl₂)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
@@ -313,7 +317,6 @@
 
         function displayCHCl3() {
             document.getElementById('moleculeName').textContent = "Trichloromethane (CHCl₃)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPosition = [1, 1, 1];
@@ -334,7 +337,6 @@
 
         function displayCH3Cl() {
             document.getElementById('moleculeName').textContent = "Chloromethane (CH₃Cl)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
@@ -355,7 +357,6 @@
 
         function displayHF() {
             document.getElementById('moleculeName').textContent = "Hydrogen Fluoride (HF)";
-            document.getElementById('polarity').textContent = "Polarity: Polar";
 
             const hydrogen = createAtom([0, 0, 0], 0xffffff, "H (2.1)");
             const fluorinePosition = [1, 0, 0];
@@ -363,11 +364,11 @@
             createBond(hydrogen.position, fluorine.position);
         }
 
-               function checkAnswers() {
+                function checkAnswers() {
             const hasPolarBonds = document.querySelector('input[name="polarBonds"]:checked');
             const isMoleculePolar = document.querySelector('input[name="moleculePolarity"]:checked');
             const ldfChecked = document.getElementById("ldf").checked;
-            const dipoleChecked = document.getElementById("dipole").checked;
+            const pdpdiChecked = document.getElementById("pdpdi").checked;
             const hydrogenBondChecked = document.getElementById("hydrogenBond").checked;
 
             if (!hasPolarBonds || !isMoleculePolar) {
@@ -378,7 +379,7 @@
             let correctPolarBonds = false;
             let correctMoleculePolarity = false;
             let correctLDF = false;
-            let correctDipole = false;
+            let correctPDPDI = false;
             let correctHydrogenBond = false;
 
             if (selectedMolecule === "CH4") {
@@ -389,7 +390,7 @@
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
                 correctHydrogenBond = true;
             } else if (selectedMolecule === "CO2") {
                 correctPolarBonds = true;
@@ -399,18 +400,18 @@
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
                 correctHydrogenBond = true;
             } else if (selectedMolecule === "SO2") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
             } else if (selectedMolecule === "PH3") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
             } else if (selectedMolecule === "CCl4") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = false;
@@ -419,22 +420,22 @@
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
             } else if (selectedMolecule === "CHCl3") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
             } else if (selectedMolecule === "CH3Cl") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
             } else if (selectedMolecule === "HF") {
                 correctPolarBonds = true;
                 correctMoleculePolarity = true;
                 correctLDF = true;
-                correctDipole = true;
+                correctPDPDI = true;
                 correctHydrogenBond = true;
             }
 
@@ -455,12 +456,14 @@
                 correctAnswers = false;
             }
 
-            if (dipoleChecked !== correctDipole) {
-                correctAnswers = false;
-            }
-
-            if (hydrogenBondChecked !== correctHydrogenBond) {
-                correctAnswers = false;
+            if (hydrogenBondChecked) {
+                if (!correctHydrogenBond) {
+                    correctAnswers = false;
+                }
+            } else {
+                if (pdpdiChecked !== correctPDPDI) {
+                    correctAnswers = false;
+                }
             }
 
             document.getElementById('result').textContent = correctAnswers ? "Correct!" : "Incorrect.";
@@ -477,6 +480,25 @@
             loadMolecule(); // Reload the molecule to apply the toggle
         }
 
+        function updateLegend() {
+            const legend = document.getElementById("legend");
+            if (showEN) {
+                legend.innerHTML = `
+                    <p><strong>Electronegativity Legend:</strong></p>
+                    <p>C: 2.5</p>
+                    <p>H: 2.1</p>
+                    <p>O: 3.5</p>
+                    <p>N: 3.0</p>
+                    <p>F: 4.0</p>
+                    <p>S: 2.5</p>
+                    <p>P: 2.1</p>
+                    <p>Cl: 3.0</p>
+                `;
+            } else {
+                legend.innerHTML = "";
+            }
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             scene.rotation.y += 0.01;
@@ -488,6 +510,7 @@
     </script>
 </body>
 </html>
+
 
 
 
