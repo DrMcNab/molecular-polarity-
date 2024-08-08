@@ -49,8 +49,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
     <script>
-        let scene, camera, renderer;
+        let scene, camera, renderer, controls;
         let selectedMolecule;
 
         function init() {
@@ -60,6 +61,12 @@
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
+
+            // Add orbit controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.screenSpacePanning = false;
 
             camera.position.z = 4;
 
@@ -199,7 +206,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            scene.rotation.y += 0.01;
+            controls.update();
             renderer.render(scene, camera);
         }
 
@@ -208,6 +215,7 @@
     </script>
 </body>
 </html>
+
 
 
 
