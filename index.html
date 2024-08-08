@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Molecule Visualization and Polarity</title>
     <style>
-        body { margin: 0; }
+        body { margin: 0; background-color: #add8e6; }
         canvas { display: block; }
         #info {
             position: absolute;
             top: 20px;
             left: 20px;
-            color: white;
+            color: black;
             font-family: Arial, sans-serif;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 10px;
             border-radius: 5px;
         }
-        select {
+        select, button, input[type="radio"] {
             margin-top: 10px;
         }
     </style>
@@ -32,12 +32,26 @@
             <option value="CO2">Carbon Dioxide (CO₂)</option>
         </select>
         <p id="polarity"></p>
+
+        <h2>Questions:</h2>
+        <p>Does this molecule have polar bonds?</p>
+        <input type="radio" name="polarBonds" id="polarBondsYes" value="yes"> Yes<br>
+        <input type="radio" name="polarBonds" id="polarBondsNo" value="no"> No<br>
+
+        <p>Is this molecule polar?</p>
+        <input type="radio" name="moleculePolarity" id="moleculePolarityYes" value="yes"> Yes<br>
+        <input type="radio" name="moleculePolarity" id="moleculePolarityNo" value="no"> No<br>
+
+        <button onclick="checkAnswers()">Check Answers</button>
+        <p id="result"></p>
+
         <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let scene, camera, renderer;
+        let selectedMolecule;
 
         function init() {
             // Create scene, camera, and renderer
@@ -47,7 +61,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            camera.position.z = 3;
+            camera.position.z = 4;
 
             loadMolecule();
         }
@@ -59,13 +73,13 @@
             }
 
             const moleculeSelect = document.getElementById('moleculeSelect');
-            const molecule = moleculeSelect.value;
+            selectedMolecule = moleculeSelect.value;
 
-            if (molecule === "CH4") {
+            if (selectedMolecule === "CH4") {
                 displayMethane();
-            } else if (molecule === "H2O") {
+            } else if (selectedMolecule === "H2O") {
                 displayWater();
-            } else if (molecule === "CO2") {
+            } else if (selectedMolecule === "CO2") {
                 displayCO2();
             }
         }
@@ -80,11 +94,13 @@
         }
 
         function createBond(start, end) {
-            const bondGeometry = new THREE.CylinderGeometry(0.05, 0.05, start.distanceTo(end), 32);
+            const bondLength = start.distanceTo(end);
+            const bondGeometry = new THREE.CylinderGeometry(0.05, 0.05, bondLength, 32);
             const bondMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
             const bond = new THREE.Mesh(bondGeometry, bondMaterial);
             bond.position.copy(start).lerp(end, 0.5);
             bond.lookAt(end);
+            bond.rotateX(Math.PI / 2); // Correct orientation
             scene.add(bond);
         }
 
@@ -94,10 +110,10 @@
 
             const carbon = createAtom([0, 0, 0], 0x000000);
             const hydrogenPositions = [
-                [1, 1, 1],
-                [-1, -1, 1],
-                [1, -1, -1],
-                [-1, 1, -1]
+                [0.93, 0.93, 0.93],
+                [-0.93, -0.93, 0.93],
+                [0.93, -0.93, -0.93],
+                [-0.93, 0.93, -0.93]
             ];
 
             hydrogenPositions.forEach(position => {
@@ -112,8 +128,8 @@
 
             const oxygen = createAtom([0, 0, 0], 0xff0000);
             const hydrogenPositions = [
-                [1, 0.6, 0],
-                [-1, 0.6, 0]
+                [0.96, 0.75, 0],
+                [-0.96, 0.75, 0]
             ];
 
             hydrogenPositions.forEach(position => {
@@ -128,14 +144,47 @@
 
             const carbon = createAtom([0, 0, 0], 0x000000);
             const oxygenPositions = [
-                [-1.5, 0, 0],
-                [1.5, 0, 0]
+                [-1.6, 0, 0],
+                [1.6, 0, 0]
             ];
 
             oxygenPositions.forEach(position => {
                 const oxygen = createAtom(position, 0xff0000);
                 createBond(carbon.position, oxygen.position);
             });
+        }
+
+        function checkAnswers() {
+            const hasPolarBonds = document.querySelector('input[name="polarBonds"]:checked');
+            const isMoleculePolar = document.querySelector('input[name="moleculePolarity"]:checked');
+
+            if (!hasPolarBonds || !isMoleculePolar) {
+                document.getElementById('result').textContent = "Please answer both questions.";
+                return;
+            }
+
+            let correctPolarBonds = false;
+            let correctMoleculePolarity = false;
+
+            if (selectedMolecule === "CH4") {
+                correctPolarBonds = false;
+                correctMoleculePolarity = false;
+            } else if (selectedMolecule === "H2O") {
+                correctPolarBonds = true;
+                correctMoleculePolarity = true;
+            } else if (selectedMolecule === "CO2") {
+                correctPolarBonds = true;
+                correctMoleculePolarity = false;
+            }
+
+            const userPolarBonds = hasPolarBonds.value === "yes";
+            const userMoleculePolarity = isMoleculePolar.value === "yes";
+
+            if (userPolarBonds === correctPolarBonds && userMoleculePolarity === correctMoleculePolarity) {
+                document.getElementById('result').textContent = "Correct!";
+            } else {
+                document.getElementById('result').textContent = "Incorrect.";
+            }
         }
 
         function toggleEN() {
