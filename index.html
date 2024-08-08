@@ -5,23 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Molecule Visualization and Polarity</title>
     <style>
-        body { 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            background-color: #add8e6; 
-            height: 100vh; 
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #add8e6;
+            height: 100vh;
+            justify-content: flex-start;
         }
         #visualization {
-            flex: 2;
+            width: 60%;
+            height: 40%;
             background-color: #f0f0f0;
-            overflow: hidden;
+            overflow: auto;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #controls {
-            flex: 1;
+            width: 80%;
             padding: 20px;
             overflow-y: auto;
             background-color: rgba(255, 255, 255, 0.8);
+            margin-top: 20px;
+            border-radius: 8px;
         }
         select, button, input[type="radio"], input[type="checkbox"] {
             margin-top: 10px;
@@ -66,22 +76,19 @@
 
         <button onclick="checkAnswers()">Check Answers</button>
         <p id="result"></p>
-
-        <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let scene, camera, renderer;
         let selectedMolecule;
-        let showEN = false;
 
         function init() {
             // Create scene, camera, and renderer
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(800, 600);
             document.getElementById('visualization').appendChild(renderer.domElement);
 
             camera.position.z = 4;
@@ -192,7 +199,7 @@
             });
         }
 
-                function displayCO2() {
+               function displayCO2() {
             const carbon = createAtom([0, 0, 0], 0x000000);
             const oxygenPositions = [
                 [-1.6, 0, 0],
@@ -431,13 +438,6 @@
             document.getElementById('result').textContent = correctAnswers ? "Correct!" : "Incorrect.";
         }
 
-                function toggleEN() {
-            const toggleButton = document.getElementById("toggleButton");
-            showEN = !showEN;
-            toggleButton.textContent = showEN ? "Use Data Booklet" : "Show Electronegativity";
-            loadMolecule(); // Reload the molecule to apply the toggle
-        }
-
         function animate() {
             requestAnimationFrame(animate);
             scene.rotation.y += 0.01; // Horizontal rotation
@@ -450,6 +450,7 @@
     </script>
 </body>
 </html>
+
 
 
                
