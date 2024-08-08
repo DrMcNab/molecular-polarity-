@@ -5,72 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Molecule Visualization and Polarity</title>
     <style>
-        body { margin: 0; background-color: #add8e6; }
-        canvas { display: block; }
-        #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: black;
-            font-family: Arial, sans-serif;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
+        body { margin: 0; display: flex; flex-direction: column; background-color: #add8e6; height: 100vh; }
+        #container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
-        select, button, input[type="radio"], input[type="checkbox"] {
-            margin-top: 10px;
+        #visualization, #controls, #legend {
+            overflow-y: auto;
+            padding: 20px;
+        }
+        #visualization {
+            flex: 3;
+            background-color: #f0f0f0;
+        }
+        #controls {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.8);
         }
         #legend {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            color: white;
-            font-family: Arial, sans-serif;
+            flex: 1;
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
+            color: white;
+        }
+        canvas { display: block; }
+        select, button, input[type="radio"], input[type="checkbox"] {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="info">
-        <h1>Molecule Visualization</h1>
-        <p id="moleculeName">Select a molecule:</p>
-        <select id="moleculeSelect" onchange="loadMolecule()">
-            <option value="CH4">Methane (CH₄)</option>
-            <option value="H2O">Water (H₂O)</option>
-            <option value="CO2">Carbon Dioxide (CO₂)</option>
-            <option value="NH3">Ammonia (NH₃)</option>
-            <option value="SO2">Sulfur Dioxide (SO₂)</option>
-            <option value="PH3">Phosphine (PH₃)</option>
-            <option value="CCl4">Tetrachloromethane (CCl₄)</option>
-            <option value="CH2Cl2">Dichloromethane (CH₂Cl₂)</option>
-            <option value="CHCl3">Trichloromethane (CHCl₃)</option>
-            <option value="CH3Cl">Chloromethane (CH₃Cl)</option>
-            <option value="HF">Hydrogen Fluoride (HF)</option>
-        </select>
+    <div id="container">
+        <div id="visualization"></div>
+        <div id="controls">
+            <h1>Molecule Visualization</h1>
+            <p>Select a molecule:</p>
+            <select id="moleculeSelect" onchange="loadMolecule()">
+                <option value="CH4">Methane (CH₄)</option>
+                <option value="H2O">Water (H₂O)</option>
+                <option value="CO2">Carbon Dioxide (CO₂)</option>
+                <option value="NH3">Ammonia (NH₃)</option>
+                <option value="SO2">Sulfur Dioxide (SO₂)</option>
+                <option value="PH3">Phosphine (PH₃)</option>
+                <option value="CCl4">Tetrachloromethane (CCl₄)</option>
+                <option value="CH2Cl2">Dichloromethane (CH₂Cl₂)</option>
+                <option value="CHCl3">Trichloromethane (CHCl₃)</option>
+                <option value="CH3Cl">Chloromethane (CH₃Cl)</option>
+                <option value="HF">Hydrogen Fluoride (HF)</option>
+            </select>
 
-        <h2>Questions:</h2>
-        <p>Does this molecule have polar bonds?</p>
-        <input type="radio" name="polarBonds" id="polarBondsYes" value="yes"> Yes<br>
-        <input type="radio" name="polarBonds" id="polarBondsNo" value="no"> No<br>
+            <h2>Questions:</h2>
+            <p>Does this molecule have polar bonds?</p>
+            <input type="radio" name="polarBonds" id="polarBondsYes" value="yes"> Yes<br>
+            <input type="radio" name="polarBonds" id="polarBondsNo" value="no"> No<br>
 
-        <p>Is this molecule polar?</p>
-        <input type="radio" name="moleculePolarity" id="moleculePolarityYes" value="yes"> Yes<br>
-        <input type="radio" name="moleculePolarity" id="moleculePolarityNo" value="no"> No<br>
+            <p>Is this molecule polar?</p>
+            <input type="radio" name="moleculePolarity" id="moleculePolarityYes" value="yes"> Yes<br>
+            <input type="radio" name="moleculePolarity" id="moleculePolarityNo" value="no"> No<br>
 
-        <h2>Intermolecular Forces:</h2>
-        <label><input type="checkbox" id="ldf" name="forces" value="ldf"> London Dispersion Forces (LDF)</label><br>
-        <label><input type="checkbox" id="pdpdi" name="forces" value="pdpdi"> PD-PDI</label><br>
-        <label><input type="checkbox" id="hydrogenBond" name="forces" value="hydrogenBond"> Hydrogen Bonding</label><br>
+            <h2>Intermolecular Forces:</h2>
+            <label><input type="checkbox" id="ldf" name="forces" value="ldf"> London Dispersion Forces (LDF)</label><br>
+            <label><input type="checkbox" id="pdpdi" name="forces" value="pdpdi"> PD-PDI</label><br>
+            <label><input type="checkbox" id="hydrogenBond" name="forces" value="hydrogenBond"> Hydrogen Bonding</label><br>
 
-        <button onclick="checkAnswers()">Check Answers</button>
-        <p id="result"></p>
+            <button onclick="checkAnswers()">Check Answers</button>
+            <p id="result"></p>
 
-        <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
+            <button id="toggleButton" onclick="toggleEN()">Show Electronegativity</button>
+        </div>
+        <div id="legend">
+            <p><strong>Electronegativity Legend:</strong></p>
+            <p>C: 2.5</p>
+            <p>H: 2.1</p>
+            <p>O: 3.5</p>
+            <p>N: 3.0</p>
+            <p>F: 4.0</p>
+            <p>S: 2.5</p>
+            <p>P: 2.1</p>
+            <p>Cl: 3.0</p>
+        </div>
     </div>
-    
-    <div id="legend"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -84,7 +98,7 @@
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+            document.getElementById('visualization').appendChild(renderer.domElement);
 
             camera.position.z = 4;
 
@@ -123,8 +137,6 @@
             } else if (selectedMolecule === "HF") {
                 displayHF();
             }
-
-            updateLegend();
         }
 
         function createAtom(position, color, label) {
@@ -133,18 +145,6 @@
             const atom = new THREE.Mesh(sphereGeometry, material);
             atom.position.set(position[0], position[1], -position[2]); // Flip on the z-axis
             scene.add(atom);
-
-            if (showEN) {
-                const div = document.createElement('div');
-                div.className = 'label';
-                div.style.position = 'absolute';
-                div.style.color = 'black';
-                div.textContent = label;
-                document.body.appendChild(div);
-                div.style.left = `${position[0] * 100 + window.innerWidth / 2}px`;
-                div.style.top = `${-position[1] * 100 + window.innerHeight / 2}px`;
-            }
-
             return atom;
         }
 
@@ -181,8 +181,6 @@
         }
 
                 function displayMethane() {
-            document.getElementById('moleculeName').textContent = "Methane (CH₄)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
                 [0.93, 0.93, 0.93],
@@ -198,8 +196,6 @@
         }
 
         function displayWater() {
-            document.getElementById('moleculeName').textContent = "Water (H₂O)";
-
             const oxygen = createAtom([0, 0, 0], 0xff0000, "O (3.5)");
             const hydrogenPositions = [
                 [0.96, 0.75, 0],
@@ -213,8 +209,6 @@
         }
 
         function displayCO2() {
-            document.getElementById('moleculeName').textContent = "Carbon Dioxide (CO₂)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const oxygenPositions = [
                 [-1.6, 0, 0],
@@ -228,8 +222,6 @@
         }
 
         function displayAmmonia() {
-            document.getElementById('moleculeName').textContent = "Ammonia (NH₃)";
-
             const nitrogen = createAtom([0, 0, 0], 0x0000ff, "N (3.0)");
             const hydrogenPositions = [
                 [1, 1, 0],
@@ -244,8 +236,6 @@
         }
 
         function displaySO2() {
-            document.getElementById('moleculeName').textContent = "Sulfur Dioxide (SO₂)";
-
             const sulfur = createAtom([0, 0, 0], 0xffff00, "S (2.5)");
             const oxygenPositions = [
                 [-1.2, 0.8, 0],
@@ -259,8 +249,6 @@
         }
 
         function displayPhosphine() {
-            document.getElementById('moleculeName').textContent = "Phosphine (PH₃)";
-
             const phosphorus = createAtom([0, 0, 0], 0xff00ff, "P (2.1)");
             const hydrogenPositions = [
                 [1, 1, 0],
@@ -275,8 +263,6 @@
         }
 
         function displayCCl4() {
-            document.getElementById('moleculeName').textContent = "Tetrachloromethane (CCl₄)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const chlorinePositions = [
                 [1.5, 1.5, 1.5],
@@ -292,8 +278,6 @@
         }
 
         function displayCH2Cl2() {
-            document.getElementById('moleculeName').textContent = "Dichloromethane (CH₂Cl₂)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
                 [1, 1, 1],
@@ -316,8 +300,6 @@
         }
 
         function displayCHCl3() {
-            document.getElementById('moleculeName').textContent = "Trichloromethane (CHCl₃)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPosition = [1, 1, 1];
             const chlorinePositions = [
@@ -336,8 +318,6 @@
         }
 
         function displayCH3Cl() {
-            document.getElementById('moleculeName').textContent = "Chloromethane (CH₃Cl)";
-
             const carbon = createAtom([0, 0, 0], 0x000000, "C (2.5)");
             const hydrogenPositions = [
                 [1, 1, 1],
@@ -356,8 +336,6 @@
         }
 
         function displayHF() {
-            document.getElementById('moleculeName').textContent = "Hydrogen Fluoride (HF)";
-
             const hydrogen = createAtom([0, 0, 0], 0xffffff, "H (2.1)");
             const fluorinePosition = [1, 0, 0];
             const fluorine = createAtom(fluorinePosition, 0x0000ff, "F (4.0)");
@@ -480,25 +458,6 @@
             loadMolecule(); // Reload the molecule to apply the toggle
         }
 
-        function updateLegend() {
-            const legend = document.getElementById("legend");
-            if (showEN) {
-                legend.innerHTML = `
-                    <p><strong>Electronegativity Legend:</strong></p>
-                    <p>C: 2.5</p>
-                    <p>H: 2.1</p>
-                    <p>O: 3.5</p>
-                    <p>N: 3.0</p>
-                    <p>F: 4.0</p>
-                    <p>S: 2.5</p>
-                    <p>P: 2.1</p>
-                    <p>Cl: 3.0</p>
-                `;
-            } else {
-                legend.innerHTML = "";
-            }
-        }
-
         function animate() {
             requestAnimationFrame(animate);
             scene.rotation.y += 0.01;
@@ -510,6 +469,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
